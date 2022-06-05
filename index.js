@@ -15,7 +15,7 @@ app.use(router);
 const io=socketio(server);
 
 io.on('connect', (socket) => {
-  console.log('conectado');
+  
   //     ======>>>>>    AL UNIRSE A LA SALA        /////////
 
   socket.on('join', ({ name, room }, callback) => {
@@ -24,7 +24,7 @@ io.on('connect', (socket) => {
     if(error) return callback(error);
     socket.join(user.room);
 
-    socket.emit('message', { user: 'administrador', text: `${user.name}, Bienvenido a la sala ${user.room}.`});
+    socket.emit('message', { user: 'admin', text: `${user.name}, Welcome to the room ${user.room}.`});
     socket.broadcast.to(user.room).emit('message', { user: 'administrador', text: ` ${user.name} se unio a la sala ` });
 
     io.to(user.room).emit('roomData', { room: user.room, users: getUsersInRoom(user.room) });
@@ -44,10 +44,10 @@ io.on('connect', (socket) => {
   //     ======>>>>>    AL IRSE DE LA SALA /////////
 
   socket.on('disconnect', ()=>{
-    console.log('desconectado');
+   
     const user = removeUser(socket.id)
     if(user){
-      io.to(user.room).emit('message', {user: 'administrador', text:`${user.name} se ha ido de la sala ${user.room}`})
+      io.to(user.room).emit('message', {user: 'admin', text:`${user.name} is gone from this room ${user.room}`})
     }
   })
 })
@@ -56,4 +56,4 @@ io.on('connect', (socket) => {
 app.use(cors);
 app.use(router);
 
- server.listen(PORT, ()=> console.log(`el servidor funciona en el puerto ${PORT}`))
+ server.listen(PORT)
